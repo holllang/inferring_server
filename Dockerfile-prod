@@ -1,0 +1,17 @@
+FROM python:3.8-alpine
+
+WORKDIR /app
+
+COPY . /app
+
+ENV FLASK_APP=app.py
+# 0: prod 환경
+ENV FLASK_DEBUG=0
+
+RUN pip install --upgrade pip
+
+RUN pip install Flask
+
+EXPOSE 5000
+
+CMD ["flask", "run"]
