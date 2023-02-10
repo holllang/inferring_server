@@ -31,7 +31,6 @@ jobs:
 
       - name: Setting env files
         run: |
-          mkdir env
           touch env/inferring_server.env
           echo "${{ secrets.INFERRING_SERVER_PROD_ENV }}" >> env/inferring_server.env
         shell: bash
