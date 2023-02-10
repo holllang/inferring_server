@@ -33,7 +33,7 @@ jobs:
         run: |
           mkdir env
           touch env/inferring_server.env
-          echo "${{ secrets.INFERRING_SERVER_DEV_ENV }}" > env/inferring_server.env
+          echo "${{ secrets.INFERRING_SERVER_DEV_ENV }}" >> env/inferring_server.env
         shell: bash
 
       - name: aws configure
