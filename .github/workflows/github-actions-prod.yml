@@ -65,7 +65,7 @@ jobs:
           
           touch scripts/start_services.sh
           echo "cd /home/ec2-user/app"
-          echo "docker run -p 5000:5000 --env-file=/home/ec2-user/app/env/inferring_server.env --network hollang-backend \
+          echo "docker run -p 5000:5000 --env-file=/home/ec2-user/app/inferring-server/env/inferring_server.env --network hollang-backend \
           -d --restart always --name $DOCKER_CONTAINER_NAME $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> scripts/start_services.sh
 
       - name: upload deploy files to AWS S3
