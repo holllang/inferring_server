@@ -1,0 +1,6 @@
+# Flask Framework
+Flask==1.1.2
+
+# Automated tests
+pytest==6.2.3
+pytest-cov==2.10.1

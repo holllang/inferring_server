@@ -1,0 +1,86 @@
+name: Hollang CI/CD - Backend CI and CD with Docker & AWS EC2
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  INFERRING-SERVER-CI-CD:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      # 소스코드 다운로드
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          python -m venv env
+          source env/bin/activate
+          pip install -r requirements.txt
+
+      - name: Setting env files
+        run: |
+          mkdir env
+          touch env/inferring_server.env
+          echo "${{ secrets.INFERRING_SERVER_PROD_ENV }}" > env/inferring_server.env
+        shell: bash
+
+      - name: aws configure
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push docker image to Amazon ECR and setting deploy files, scripts
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: hollang-flask
+          DOCKER_CONTAINER_NAME: hollang-inferring-server-prod
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile-prod .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          mkdir scripts
+          touch scripts/stop_services.sh
+          echo "docker rm -f $DOCKER_CONTAINER_NAME 2> /dev/null || true" >> scripts/stop_services.sh
+          
+          touch scripts/config_services.sh
+          echo "aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $ECR_REGISTRY" >> scripts/config_services.sh
+          echo "docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> scripts/config_services.sh
+          
+          touch scripts/start_services.sh
+          echo "cd /home/ec2-user/app"
+          echo "docker run -p 5000:5000 --env-file=/home/ec2-user/app/env/inferring_server.env --network hollang-backend \
+          -d --restart always --name $DOCKER_CONTAINER_NAME $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> scripts/start_services.sh
+
+      - name: upload deploy files to AWS S3
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          zip -r inferring-app-codedeploy-$IMAGE_TAG.zip ./scripts ./env/inferring_server.env appspec.yml
+          aws s3 cp --region ap-northeast-2 --acl private ./inferring-app-codedeploy-$IMAGE_TAG.zip s3://hollang-codedeploy/inferring_services/prod/
+
+      - name: start deploy
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          aws deploy create-deployment --application-name HollangApplication \
+          --deployment-config-name ECSLinear10PercentEvery1Minutes \
+          --deployment-group-name production \
+          --s3-location bucket=hollang-codedeploy,bundleType=zip,key=inferring_services/prod/inferring-app-codedeploy-$IMAGE_TAG.zip
