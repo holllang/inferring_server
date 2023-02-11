@@ -81,5 +81,5 @@ jobs:
         run: |
           aws deploy create-deployment --application-name HollangApplication \
           --deployment-config-name ECSLinear10PercentEvery1Minutes \
-          --deployment-group-name production \
+          --deployment-group-name production-flask \
           --s3-location bucket=hollang-codedeploy,bundleType=zip,key=inferring_services/prod/inferring-app-codedeploy-$IMAGE_TAG.zip
