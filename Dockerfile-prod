@@ -10,7 +10,6 @@ ENV FLASK_DEBUG=0
 
 RUN pip install --upgrade pip
 
-RUN pip install tensorflow
 RUN pip install Flask
 
 EXPOSE 5000
