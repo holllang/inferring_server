@@ -12,7 +12,7 @@ class InferModule:
     def __init__(self, model):
         self.model = model
         self.score_bias = []
-        with open('./model_saved/base_info.json', encoding='utf8') as f:
+        with open('./model/model_saved/base_info.json', encoding='utf8') as f:
             base_info = json.load(f)
             self.position_score = base_info["list"]
             self.num2hobby = base_info["hobby_enum"]
