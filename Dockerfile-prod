@@ -8,9 +8,10 @@ ENV FLASK_APP=app.py
 # 0: prod 환경
 ENV FLASK_DEBUG=0
 
-RUN pip install --upgrade pip
+RUN python -m pip install --upgrade pip
 
-RUN pip install Flask
+RUN pip install Flask==2.1.0
+RUN pip install tensorflow==2.11.0
 
 EXPOSE 5000
 
