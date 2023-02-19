@@ -11,7 +11,6 @@ ENV FLASK_DEBUG=0
 RUN python -m pip install --upgrade pip
 
 RUN pip install Flask==2.1.0
-RUN pip install -r requirements.txt
 
 EXPOSE 5000
 
