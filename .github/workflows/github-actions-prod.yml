@@ -9,20 +9,20 @@ permissions:
 
 jobs:
   INFERRING-SERVER-CI-CD:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: .
     steps:
       # 소스코드 다운로드
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.10
-          cache: "poetry"
+          python-version: "3.10"
+          cache: "pip"
 
       - name: Install dependencies
         run: |
