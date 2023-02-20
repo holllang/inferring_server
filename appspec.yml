@@ -15,7 +15,7 @@ hooks:
       runas: ec2-user
   BeforeInstall:
     - location: scripts/config_services.sh
-      timeout: 120
+      timeout: 300
       runas: ec2-user
   AfterInstall:
     - location: scripts/start_services.sh
