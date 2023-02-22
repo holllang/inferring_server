@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 from model.infer import InferModule
 from keras import models
 
-model = models.load_model('./model/model_saved')
+model = models.load_model('./model/model_saved.h5')
 IM = InferModule(model)
 
 app = Flask(__name__)
