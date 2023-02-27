@@ -1,0 +1,23 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ec2-user/app/inferring-server
+    overwrite: yes
+permissions:
+  - object: /home/ec2-user/app/inferring-server
+    owner: ec2-user
+    group: ec2-user
+hooks:
+  ApplicationStop:
+    - location: scripts/stop_services.sh
+      timeout: 120
+      runas: ec2-user
+  BeforeInstall:
+    - location: scripts/config_services.sh
+      timeout: 300
+      runas: ec2-user
+  AfterInstall:
+    - location: scripts/start_services.sh
+      timeout: 120
+      runas: ec2-user

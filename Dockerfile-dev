@@ -1,0 +1,28 @@
+# Base image
+FROM python:3.10-slim-buster
+
+# Set working directory
+WORKDIR /app
+
+ENV FLASK_APP=app.py
+# 1: dev 환경
+ENV FLASK_DEBUG=1
+
+# Copy requirements file
+COPY requirements.txt .
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libgomp1 && \
+    pip install --no-cache-dir -r requirements.txt && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy application code
+COPY . /app
+
+# Expose the port that Flask app will be served on
+EXPOSE 5000
+
+# Start the Flask app
+CMD ["python", "app.py"]

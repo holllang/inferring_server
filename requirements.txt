@@ -1,0 +1,9 @@
+# Flask Framework
+Flask==2.1.0
+
+# Automated tests
+pytest==6.2.3
+pytest-cov==2.10.1
+
+# deeplearning
+tensorflow-cpu==2.11.0
