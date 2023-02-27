@@ -8,6 +8,10 @@ IM = InferModule(model)
 
 app = Flask(__name__)
 
+@app.route('/health', methods=['GET'])
+def healthCheck():
+    return 'Ok', 200
+
 @app.route('/test-responses', methods=['POST'])
 def inferHobbiesAndType():
     testResponses: list = request.get_json()
